@@ -1,22 +1,36 @@
 import java.time.Instant
+import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 
 plugins {
     id 'com.android.application'
 }
 
 def defaultCountdownStart = '2026-10-01T00:00:00+08:00'
-def countdownStart = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
+def countdownStartInput = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
+def countdownStart
 def countdownEpochSeconds
 
 try {
-    countdownEpochSeconds = OffsetDateTime.parse(countdownStart).toEpochSecond()
+    def parsed = OffsetDateTime.parse(countdownStartInput)
+    countdownStart = parsed.toString()
+    countdownEpochSeconds = parsed.toEpochSecond()
 } catch (Exception ignored) {
     try {
-        countdownEpochSeconds = Instant.parse(countdownStart).epochSecond
+        def parsed = Instant.parse(countdownStartInput)
+        countdownStart = parsed.toString()
+        countdownEpochSeconds = parsed.epochSecond
     } catch (Exception ignoredAgain) {
-        throw new GradleException("countdownStart must be ISO-8601, for example 2026-10-01T00:00:00+08:00")
+        try {
+            def parsed = LocalDate.parse(countdownStartInput)
+                    .atStartOfDay(ZoneId.of('Asia/Shanghai'))
+                    .toOffsetDateTime()
+            countdownStart = parsed.toString()
+            countdownEpochSeconds = parsed.toEpochSecond()
+        } catch (Exception ignoredDateOnly) {
+            throw new GradleException("countdownStart must be a date or ISO-8601 time, for example 2026-10-01 or 2026-10-01T00:00:00+08:00")
+        }
     }
 }
 

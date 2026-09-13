@@ -3,10 +3,15 @@ name: Build Android APK
 on:
   workflow_dispatch:
     inputs:
-      start_time:
-        description: "固定起始时间（ISO-8601，例如 2026-12-31T23:59:59+08:00）"
+      start_date:
+        description: "固定开始日期/时间（2026-12-31 或 ISO-8601）"
         required: true
         default: "2026-10-01T00:00:00+08:00"
+        type: string
+      home_image:
+        description: "主页图片 URL，或仓库内图片路径（可留空使用默认图片）"
+        required: false
+        default: ""
         type: string
   push:
     branches: ["main"]
@@ -18,7 +23,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      COUNTDOWN_START: ${{ inputs.start_time || '2026-10-01T00:00:00+08:00' }}
+      COUNTDOWN_START: ${{ inputs.start_date || '2026-10-01T00:00:00+08:00' }}
+      HOME_IMAGE: ${{ inputs.home_image || '' }}
 
     steps:
       - name: Check out source
@@ -34,6 +40,34 @@ jobs:
         uses: android-actions/setup-android@v4
         with:
           packages: "platforms;android-35 build-tools;35.0.0"
+
+      - name: Embed homepage image
+        if: ${{ env.HOME_IMAGE != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_image="app/src/main/res/drawable/home_image.xml"
+          temp_image="$(mktemp)"
+          if [[ "$HOME_IMAGE" == https://* || "$HOME_IMAGE" == http://* ]]; then
+            curl --fail --location --retry 3 --max-time 60 "$HOME_IMAGE" --output "$temp_image"
+          else
+            test -f "$HOME_IMAGE"
+            cp -- "$HOME_IMAGE" "$temp_image"
+          fi
+
+          mime_type="$(file --brief --mime-type "$temp_image")"
+          case "$mime_type" in
+            image/png) extension="png" ;;
+            image/jpeg) extension="jpg" ;;
+            image/webp) extension="webp" ;;
+            *) echo "home_image must be a PNG, JPEG, or WEBP image (detected: $mime_type)"; exit 1 ;;
+          esac
+
+          rm -f "$default_image" \
+            app/src/main/res/drawable/home_image.png \
+            app/src/main/res/drawable/home_image.jpg \
+            app/src/main/res/drawable/home_image.webp
+          mv "$temp_image" "app/src/main/res/drawable/home_image.$extension"
 
       - name: Set up Gradle 8.7
         uses: gradle/actions/setup-gradle@v6

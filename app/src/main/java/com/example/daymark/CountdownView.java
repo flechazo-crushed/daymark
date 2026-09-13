@@ -7,9 +7,11 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Path;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.graphics.drawable.Drawable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +32,7 @@ public final class CountdownView extends View {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final long startMillis = BuildConfig.COUNTDOWN_START_EPOCH_SECONDS * 1000L;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年M月d日 HH:mm", Locale.CHINA);
+    private final Drawable homeImage;
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
@@ -46,6 +49,7 @@ public final class CountdownView extends View {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         paint.setTypeface(android.graphics.Typeface.create("sans", android.graphics.Typeface.NORMAL));
         dateFormat.setTimeZone(TimeZone.getDefault());
+        homeImage = getResources().getDrawable(R.drawable.home_image, null);
         setBackgroundColor(BG);
     }
 
@@ -82,6 +86,21 @@ public final class CountdownView extends View {
     private void drawTopBar(Canvas canvas, float p) {
         text(canvas, "DAYMARK", p, dp(42), 12, TEAL, true, Paint.Align.LEFT);
         text(canvas, "固定纪念日", getWidth() - p, dp(42), 12, MUTED, false, Paint.Align.RIGHT);
+        drawHomeImage(canvas, getWidth() - p - dp(88), dp(64), dp(88), dp(88));
+    }
+
+    private void drawHomeImage(Canvas canvas, float left, float top, float width, float height) {
+        if (homeImage == null) {
+            return;
+        }
+        Path clip = new Path();
+        rect.set(left, top, left + width, top + height);
+        clip.addRoundRect(rect, dp(22), dp(22), Path.Direction.CW);
+        canvas.save();
+        canvas.clipPath(clip);
+        homeImage.setBounds((int) left, (int) top, (int) (left + width), (int) (top + height));
+        homeImage.draw(canvas);
+        canvas.restore();
     }
 
     private void drawHero(Canvas canvas, float p, float w) {
