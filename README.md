@@ -34,5 +34,7 @@ gradle assembleRelease
 gradle assembleRelease -PcountdownStart="2026-12-31T23:59:59+08:00"
 ```
 
-Actions 会同时上传 debug APK（可直接安装）和 release unsigned APK（用于后续接入正式签名）。
+Actions 只上传一个可直接安装的 debug 签名 APK，Artifact 名称为 `daymark-installer`。下载后先解压 ZIP，再安装里面的 `daymark-installer.apk`；不要把 ZIP 或未签名 APK 当作安装包。
+
+如果设备已经安装过其他签名版本的 Daymark，需要先卸载旧版本再安装新构建；应用包名是 `com.example.daymark`。
 默认时间是 `2026-10-01T00:00:00+08:00`。
