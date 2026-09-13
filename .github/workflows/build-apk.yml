@@ -90,16 +90,41 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Build APKs
-        run: gradle --no-daemon assembleDebug -PcountdownStart="$COUNTDOWN_START"
-
-      - name: Prepare installable APK
+      - name: Generate release signing key
         shell: bash
-        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/daymark-installer.apk
+        run: |
+          set -euo pipefail
+          signing_password="$(openssl rand -hex 32)"
+          signing_store_file="$RUNNER_TEMP/daymark-release.jks"
+          keytool -genkeypair -v \
+            -keystore "$signing_store_file" \
+            -storetype JKS \
+            -storepass "$signing_password" \
+            -keypass "$signing_password" \
+            -alias daymark-release \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Daymark, OU=Build, O=Daymark, L=Shanghai, ST=Shanghai, C=CN"
+          echo "SIGNING_PASSWORD=$signing_password" >> "$GITHUB_ENV"
+          echo "SIGNING_STORE_FILE=$signing_store_file" >> "$GITHUB_ENV"
 
-      - name: Upload installable APK
+      - name: Build signed release APK
+        run: >-
+          gradle --no-daemon assembleRelease
+          -PcountdownStart="$COUNTDOWN_START"
+          -PsigningStoreFile="$SIGNING_STORE_FILE"
+          -PsigningStorePassword="$SIGNING_PASSWORD"
+          -PsigningKeyAlias=daymark-release
+          -PsigningKeyPassword="$SIGNING_PASSWORD"
+
+      - name: Prepare signed release APK
+        shell: bash
+        run: cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/daymark-release.apk
+
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: daymark-installer
-          path: app/build/outputs/apk/debug/daymark-installer.apk
+          name: daymark-release
+          path: app/build/outputs/apk/release/daymark-release.apk
           if-no-files-found: error

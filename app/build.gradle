@@ -10,6 +10,10 @@ plugins {
 
 def defaultCountdownStart = '2026-10-01T00:00:00+08:00'
 def countdownStartInput = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
+def signingStoreFile = providers.gradleProperty('signingStoreFile').orNull
+def signingStorePassword = providers.gradleProperty('signingStorePassword').orNull
+def signingKeyAlias = providers.gradleProperty('signingKeyAlias').orNull
+def signingKeyPassword = providers.gradleProperty('signingKeyPassword').orNull
 def countdownStart
 def countdownEpochSeconds
 
@@ -60,6 +64,17 @@ android {
         buildConfig true
     }
 
+    signingConfigs {
+        release {
+            if (signingStoreFile != null) {
+                storeFile file(signingStoreFile)
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -68,6 +83,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            if (signingStoreFile != null) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
