@@ -2,6 +2,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 plugins {
     id 'com.android.application'
@@ -23,13 +24,19 @@ try {
         countdownEpochSeconds = parsed.epochSecond
     } catch (Exception ignoredAgain) {
         try {
-            def parsed = LocalDate.parse(countdownStartInput)
+            LocalDate parsedDate
+            try {
+                parsedDate = LocalDate.parse(countdownStartInput)
+            } catch (Exception ignoredDashedDate) {
+                parsedDate = LocalDate.parse(countdownStartInput, DateTimeFormatter.BASIC_ISO_DATE)
+            }
+            def parsed = parsedDate
                     .atStartOfDay(ZoneId.of('Asia/Shanghai'))
                     .toOffsetDateTime()
             countdownStart = parsed.toString()
             countdownEpochSeconds = parsed.toEpochSecond()
         } catch (Exception ignoredDateOnly) {
-            throw new GradleException("countdownStart must be a date or ISO-8601 time, for example 2026-10-01 or 2026-10-01T00:00:00+08:00")
+            throw new GradleException("countdownStart must be yyyyMMdd, yyyy-MM-dd, or ISO-8601, for example 20260321")
         }
     }
 }
