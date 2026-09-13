@@ -23,8 +23,10 @@ gradle assembleRelease -PcountdownStart="2026-12-31T23:59:59+08:00"
 需要 JDK 17、Android SDK 35 和 Gradle 8.7+：
 
 ```text
+gradle assembleDebug
 gradle assembleRelease
 gradle assembleRelease -PcountdownStart="2026-12-31T23:59:59+08:00"
 ```
 
+Actions 会同时上传 debug APK（可直接安装）和 release unsigned APK（用于后续接入正式签名）。
 默认时间是 `2026-10-01T00:00:00+08:00`。
