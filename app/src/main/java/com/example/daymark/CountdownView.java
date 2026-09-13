@@ -137,11 +137,10 @@ public final class CountdownView extends View {
         drawRoundCard(canvas, p, top, w - p * 2, dp(116), CARD);
         text(canvas, "时间锚点", p + dp(20), top + dp(30), 12, TEAL, true, Paint.Align.LEFT);
         text(canvas, dateFormat.format(new Date(startMillis)), p + dp(20), top + dp(62), 19, INK, true, Paint.Align.LEFT);
-        text(canvas, "这个时间写入当前安装包，应用内无法修改", p + dp(20), top + dp(91), 12, MUTED, false, Paint.Align.LEFT);
     }
 
     private void drawFooter(Canvas canvas, float p, float w, float h) {
-        text(canvas, "专注此刻，等待值得等待的事", p, Math.max(dp(500), h - dp(36)), 12, MUTED, false, Paint.Align.LEFT);
+        text(canvas, "专注此刻，有你真好", p, Math.max(dp(500), h - dp(36)), 12, MUTED, false, Paint.Align.LEFT);
         text(canvas, "v1.0.0", w - p, Math.max(dp(500), h - dp(36)), 12, MUTED, false, Paint.Align.RIGHT);
     }
 
