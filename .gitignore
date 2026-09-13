@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Android Studio
+.idea/
+*.iml
+local.properties
+
+# Local metadata used when the workspace's .git directory is read-only
+work/daymark.git/
+
+# OS
+.DS_Store
+Thumbs.db

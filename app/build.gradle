@@ -1,0 +1,53 @@
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+
+plugins {
+    id 'com.android.application'
+}
+
+def defaultCountdownStart = '2026-10-01T00:00:00+08:00'
+def countdownStart = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
+def countdownEpochSeconds
+
+try {
+    countdownEpochSeconds = OffsetDateTime.parse(countdownStart).toEpochSecond()
+} catch (Exception ignored) {
+    try {
+        countdownEpochSeconds = Instant.parse(countdownStart).epochSecond
+    } catch (Exception ignoredAgain) {
+        throw new GradleException("countdownStart must be ISO-8601, for example 2026-10-01T00:00:00+08:00")
+    }
+}
+
+android {
+    namespace 'com.example.daymark'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.example.daymark'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+
+        buildConfigField 'long', 'COUNTDOWN_START_EPOCH_SECONDS', "${countdownEpochSeconds}L"
+        buildConfigField 'String', 'COUNTDOWN_START_ISO', '"' + countdownStart.replace('"', '\\"') + '"'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
