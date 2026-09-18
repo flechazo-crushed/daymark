@@ -6,11 +6,17 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.example.liquidglass.LiquidGlassTabBar;
+import com.example.liquidglass.LiquidGlassView;
+
+import java.util.Arrays;
+
+import kotlin.Unit;
+
 public final class CountdownView extends FrameLayout {
-    private View backgroundView;
-    private View dimView;
-    private View glassView;
-    private ModeSwitchView modeSwitch;
+    private View backdropView;
+    private LiquidGlassView glassView;
+    private LiquidGlassTabBar modeSwitch;
     private TextView loveLabel;
     private CountdownCardView countdownCard;
     private float density;
@@ -24,13 +30,21 @@ public final class CountdownView extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        backgroundView = findViewById(R.id.background_image);
-        dimView = findViewById(R.id.background_dim);
+        backdropView = findViewById(R.id.glass_backdrop);
         glassView = findViewById(R.id.glass_card);
         modeSwitch = findViewById(R.id.switch_glass);
         loveLabel = findViewById(R.id.love_label);
         countdownCard = findViewById(R.id.countdown_card);
-        modeSwitch.setOnModeChangedListener(countdownCard::setMode);
+
+        // Both glass roots sample only the static image and dim layer, never
+        // each other or the parent that contains their animated children.
+        glassView.setBackdropSource(backdropView);
+        modeSwitch.setBackdropSource(backdropView);
+        modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", "木头"));
+        modeSwitch.setOnTabSelected(index -> {
+            countdownCard.setMode(index);
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
@@ -47,15 +61,14 @@ public final class CountdownView extends FrameLayout {
         int switchWidth = Math.max(0, Math.min(dp(276), width - dp(40)));
         modeSwitch.measure(
                 MeasureSpec.makeMeasureSpec(switchWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(dp(48), MeasureSpec.EXACTLY));
+                MeasureSpec.makeMeasureSpec(dp(54), MeasureSpec.EXACTLY));
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int width = right - left;
         int height = bottom - top;
-        backgroundView.layout(0, 0, width, height);
-        dimView.layout(0, 0, width, height);
+        backdropView.layout(0, 0, width, height);
 
         int cardWidth = glassView.getMeasuredWidth();
         int cardHeight = glassView.getMeasuredHeight();
