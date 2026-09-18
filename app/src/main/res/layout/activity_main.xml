@@ -28,10 +28,10 @@
         app:adaptiveTint="true"
         app:bevelWidth="28dp"
         app:cornerRadius="28dp"
-        app:dispersionStrength="0.1"
+        app:dispersionStrength="0.06"
         app:glassMaterial="regular"
-        app:refractionHeight="18dp"
-        app:sensorHighlight="true">
+        app:refractionHeight="14dp"
+        app:sensorHighlight="false">
 
         <com.VoidSoul.daymark.CountdownCardView
             android:id="@+id/countdown_card"
@@ -41,20 +41,15 @@
 
     </com.example.liquidglass.LiquidGlassView>
 
-    <com.example.liquidglass.LiquidGlassView
+    <FrameLayout
         android:id="@+id/switch_glass"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@drawable/glass_switch_background"
         android:clickable="true"
+        android:clipToOutline="true"
         android:contentDescription="切换"
-        android:focusable="true"
-        app:adaptiveTint="true"
-        app:bevelWidth="12dp"
-        app:cornerRadius="18dp"
-        app:dispersionStrength="0.1"
-        app:glassMaterial="regular"
-        app:refractionHeight="10dp"
-        app:sensorHighlight="true">
+        android:focusable="true">
 
         <TextView
             android:id="@+id/switch_label"
@@ -66,7 +61,7 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-    </com.example.liquidglass.LiquidGlassView>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/love_label"

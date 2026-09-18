@@ -58,8 +58,8 @@ android {
         applicationId 'com.VoidSoul.daymark'
         minSdk 26
         targetSdk 35
-        versionCode 17
-        versionName '1.0.17'
+        versionCode 18
+        versionName '1.0.18'
 
         buildConfigField 'long', 'COUNTDOWN_START_EPOCH_SECONDS', "${countdownEpochSeconds}L"
         buildConfigField 'String', 'COUNTDOWN_START_ISO', '"' + countdownStart.replace('"', '\\"') + '"'

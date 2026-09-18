@@ -59,7 +59,18 @@ public final class CountdownCardView extends View {
         String targetDate = "目标日：" + dateFormat.format(new Date(targetMillis))
                 + "  " + weekday(targetMillis);
         text(canvas, targetDate, centerX, height - dp(58), 15, MUTED_WHITE, false);
-        postInvalidateDelayed(1000L);
+        postInvalidateDelayed(delayUntilNextDay(now));
+    }
+
+    private long delayUntilNextDay(long now) {
+        Calendar nextDay = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        nextDay.setTimeInMillis(now);
+        nextDay.set(Calendar.HOUR_OF_DAY, 0);
+        nextDay.set(Calendar.MINUTE, 0);
+        nextDay.set(Calendar.SECOND, 0);
+        nextDay.set(Calendar.MILLISECOND, 0);
+        nextDay.add(Calendar.DAY_OF_YEAR, 1);
+        return Math.max(1000L, nextDay.getTimeInMillis() - now + 100L);
     }
 
     private long nextBirthdayMillis(long now) {

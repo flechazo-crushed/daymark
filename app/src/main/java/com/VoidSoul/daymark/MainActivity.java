@@ -8,8 +8,6 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
-import com.example.liquidglass.LiquidGlassView;
-
 public final class MainActivity extends Activity {
     private static final int IMMERSIVE_FLAGS = View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -25,17 +23,7 @@ public final class MainActivity extends Activity {
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
 
-        configureGlassRendering();
         applyFullscreen();
-    }
-
-    private void configureGlassRendering() {
-        // Avoid Android 16 RenderNode recursion when adjacent glass views sample
-        // the same parent. The library's software path keeps the glass effect.
-        LiquidGlassView glassCard = findViewById(R.id.glass_card);
-        LiquidGlassView switchGlass = findViewById(R.id.switch_glass);
-        glassCard.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        switchGlass.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override
