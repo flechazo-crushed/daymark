@@ -7,7 +7,7 @@
 在 GitHub 的 Actions 页面手动运行 **Build Android APK**，填写：
 
 - `start_date`：可以填写 `20260321`、`2026-12-31`，也可以填写带时区的 ISO-8601 时间。
-- `home_image`：填写可访问的 PNG/JPEG/WEBP 图片 URL，或仓库内已有图片路径；留空使用默认主页图片。
+- `home_image`：填写可访问的 PNG/JPEG/WEBP 图片 URL，或仓库内已有图片路径；默认使用 `mmexport1789272863975.jpg`。
 
 例如：
 
@@ -23,6 +23,8 @@ gradle assembleRelease -PcountdownStart="2026-12-31T23:59:59+08:00"
 ```
 
 `app/build.gradle` 将日期转换为 epoch 秒并写入 `BuildConfig`。私有 GitHub blob 图片会通过 Action 的只读 `GITHUB_TOKEN` 读取，然后在构建阶段复制到 Android drawable 资源中。运行时没有编辑页面，也没有网络权限；要更换日期或主页图片，需要重新运行 Action 并安装新的 APK。
+
+主页采用全屏背景图、暗色遮罩和中央模糊毛玻璃卡片。背景图只在构建时写入 APK，应用内不能替换。
 
 ## 本地构建
 
