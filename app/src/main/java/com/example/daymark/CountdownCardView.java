@@ -39,7 +39,7 @@ public final class CountdownCardView extends View {
         boolean upcoming = diff >= 0;
         long totalDays = Math.abs(diff) / DAY_MILLIS;
 
-        text(canvas, upcoming ? "生日还有" : "生日已到", centerX,
+        text(canvas, upcoming ? "生日还有" : "和小傻子在一起已经", centerX,
                 dp(62), 28, WHITE, true);
         text(canvas, String.valueOf(totalDays), centerX,
                 height * 0.56f, 92, WHITE, true);
