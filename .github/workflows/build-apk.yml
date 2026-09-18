@@ -2,30 +2,18 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
-    inputs:
-      start_date:
-        description: "固定开始日期/时间（2026-12-31 或 ISO-8601）"
-        required: true
-        default: "20260321"
-        type: string
-      home_image:
-        description: "主页图片 URL，或仓库内图片路径（可留空使用默认图片）"
-        required: false
-        default: "mmexport1789272863975.jpg"
-        type: string
   push:
     branches: ["main"]
+    tags: ["v*"]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      COUNTDOWN_START: ${{ inputs.start_date || '20260321' }}
-      HOME_IMAGE: ${{ inputs.home_image || 'mmexport1789272863975.jpg' }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      COUNTDOWN_START: "20260321"
 
     steps:
       - name: Check out source
@@ -41,49 +29,6 @@ jobs:
         uses: android-actions/setup-android@v4
         with:
           packages: "platforms;android-35 build-tools;35.0.0"
-
-      - name: Embed homepage image
-        if: ${{ env.HOME_IMAGE != '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          default_image="app/src/main/res/drawable/home_image.xml"
-          temp_image="$(mktemp)"
-          if [[ "$HOME_IMAGE" =~ ^https://github\.com/[^/]+/[^/]+/blob/[^/]+/.+ ]]; then
-            github_path="${HOME_IMAGE#https://github.com/}"
-            source_owner="${github_path%%/*}"
-            github_path="${github_path#*/}"
-            source_repo="${github_path%%/*}"
-            github_path="${github_path#*/}"
-            github_path="${github_path#blob/}"
-            source_ref="${github_path%%/*}"
-            source_path="${github_path#*/}"
-            source_path="${source_path%%\?*}"
-            api_url="https://api.github.com/repos/${source_owner}/${source_repo}/contents/${source_path}?ref=${source_ref}"
-            curl --fail --location --retry 3 --max-time 60 \
-              --header "Authorization: Bearer $GITHUB_TOKEN" \
-              --header "Accept: application/vnd.github.raw+json" \
-              "$api_url" --output "$temp_image"
-          elif [[ "$HOME_IMAGE" == https://* || "$HOME_IMAGE" == http://* ]]; then
-            curl --fail --location --retry 3 --max-time 60 "$HOME_IMAGE" --output "$temp_image"
-          else
-            test -f "$HOME_IMAGE"
-            cp -- "$HOME_IMAGE" "$temp_image"
-          fi
-
-          mime_type="$(file --brief --mime-type "$temp_image")"
-          case "$mime_type" in
-            image/png) extension="png" ;;
-            image/jpeg) extension="jpg" ;;
-            image/webp) extension="webp" ;;
-            *) echo "home_image must be a PNG, JPEG, or WEBP image (detected: $mime_type)"; exit 1 ;;
-          esac
-
-          rm -f "$default_image" \
-            app/src/main/res/drawable/home_image.png \
-            app/src/main/res/drawable/home_image.jpg \
-            app/src/main/res/drawable/home_image.webp
-          mv "$temp_image" "app/src/main/res/drawable/home_image.$extension"
 
       - name: Set up Gradle 8.7
         uses: gradle/actions/setup-gradle@v6
@@ -128,3 +73,13 @@ jobs:
           name: daymark-release
           path: app/build/outputs/apk/release/daymark-release.apk
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            app/build/outputs/apk/release/daymark-release.apk \
+            --title "Daymark $GITHUB_REF_NAME" \
+            --notes "Signed Android release. The countdown date is fixed at 20260321."

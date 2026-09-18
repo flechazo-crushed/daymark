@@ -75,10 +75,10 @@ public final class CountdownView extends View {
         paint.setColor(BACKDROP);
         canvas.drawRect(0, 0, w, h, paint);
 
-        float cardLeft = dp(24);
-        float cardRight = w - dp(24);
-        float cardTop = h * 0.12f;
-        float cardBottom = h * 0.86f;
+        float cardLeft = dp(46);
+        float cardRight = w - dp(46);
+        float cardTop = h * 0.22f;
+        float cardBottom = h * 0.78f;
         float radius = dp(28);
         rect.set(cardLeft, cardTop, cardRight, cardBottom);
         cardPath.reset();
@@ -88,7 +88,7 @@ public final class CountdownView extends View {
         canvas.save();
         canvas.clipPath(cardPath);
         drawBitmapCover(canvas, blurredBackground, 0, 0, w, h);
-        paint.setColor(0x26000000);
+        paint.setColor(0x42000000);
         canvas.drawRect(rect, paint);
         canvas.restore();
 
@@ -118,7 +118,7 @@ public final class CountdownView extends View {
         text(canvas, targetDate, centerX, cardBottom - dp(58), 15, MUTED_WHITE,
                 false, Paint.Align.CENTER);
 
-        text(canvas, "Daymark", centerX, cardBottom + dp(42), 20, WHITE, true, Paint.Align.CENTER);
+        text(canvas, "爱你的日期", centerX, cardBottom + dp(42), 20, WHITE, true, Paint.Align.CENTER);
         drawPill(canvas, centerX + dp(52), cardBottom + dp(25), "倒数日");
     }
 
@@ -147,7 +147,7 @@ public final class CountdownView extends View {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawImageCover(canvas, source, 0, 0, width, height);
-        return boxBlur(bitmap, 5);
+        return boxBlur(bitmap, 9);
     }
 
     private Bitmap boxBlur(Bitmap source, int radius) {
