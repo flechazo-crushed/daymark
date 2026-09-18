@@ -20,6 +20,8 @@ import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
     private static final float TAB_LABEL_OFFSET_DP = 10f;
+    private static final float FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP = 2f;
+    private static final float WOOD_TAB_LABEL_EXTRA_OFFSET_DP = 4f;
     private static final float CONTENT_TRAVEL_DP = 18f;
     private static final long CONTENT_EXIT_DURATION_MS = 90L;
     private static final long CONTENT_ENTER_DURATION_MS = 200L;
@@ -51,7 +53,7 @@ public final class CountdownView extends FrameLayout {
         // each other or the parent that contains their animated children.
         glassView.setBackdropSource(backdropView);
         modeSwitch.setBackdropSource(backdropView);
-        modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", "木头"));
+        modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", " 木头"));
         offsetTabLabels();
         modeSwitch.setOnTabSelected(index -> {
             animateCountdownContent(index);
@@ -181,7 +183,13 @@ public final class CountdownView extends FrameLayout {
         }
         ViewGroup row = (ViewGroup) tabRow;
         for (int index = 0; index < row.getChildCount(); index++) {
-            row.getChildAt(index).setTranslationX(dp(TAB_LABEL_OFFSET_DP));
+            float offset = TAB_LABEL_OFFSET_DP;
+            if (index < 2) {
+                offset += FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP;
+            } else if (index == 2) {
+                offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
+            }
+            row.getChildAt(index).setTranslationX(dp(offset));
         }
     }
 }
