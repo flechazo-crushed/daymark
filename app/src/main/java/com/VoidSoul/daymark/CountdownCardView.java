@@ -62,7 +62,8 @@ public final class CountdownCardView extends View {
         text(canvas, "天", centerX,
                 height * 0.56f + dp(42), 18, MUTED_WHITE, false);
 
-        String targetDate = "目标日：" + dateFormat.format(new Date(targetMillis))
+        String dateLabel = mode == MODE_TOGETHER ? "起始日：" : "目标日：";
+        String targetDate = dateLabel + dateFormat.format(new Date(targetMillis))
                 + "  " + weekday(targetMillis);
         text(canvas, targetDate, centerX, height - dp(58), 15, MUTED_WHITE, false);
         postInvalidateDelayed(delayUntilNextDay(now));

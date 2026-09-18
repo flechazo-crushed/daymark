@@ -3,6 +3,7 @@ package com.VoidSoul.daymark;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -14,6 +15,8 @@ import java.util.Arrays;
 import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
+    private static final float TAB_LABEL_OFFSET_DP = 6f;
+
     private View backdropView;
     private LiquidGlassView glassView;
     private LiquidGlassTabBar modeSwitch;
@@ -41,6 +44,7 @@ public final class CountdownView extends FrameLayout {
         glassView.setBackdropSource(backdropView);
         modeSwitch.setBackdropSource(backdropView);
         modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", "木头"));
+        offsetTabLabels();
         modeSwitch.setOnTabSelected(index -> {
             countdownCard.setMode(index);
             return Unit.INSTANCE;
@@ -95,5 +99,18 @@ public final class CountdownView extends FrameLayout {
 
     private int dp(float value) {
         return Math.round(value * density);
+    }
+
+    private void offsetTabLabels() {
+        // QWEA0 positions its droplet from tab layout bounds, so shift only
+        // the visible label roots to balance the CJK text inside each segment.
+        View tabRow = modeSwitch.getChildAt(0);
+        if (!(tabRow instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup row = (ViewGroup) tabRow;
+        for (int index = 0; index < row.getChildCount(); index++) {
+            row.getChildAt(index).setTranslationX(dp(TAB_LABEL_OFFSET_DP));
+        }
     }
 }
