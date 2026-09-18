@@ -8,6 +8,10 @@ plugins {
     id 'com.android.application'
 }
 
+dependencies {
+    implementation 'com.github.QWEA0:liquidglass:v2.0.10'
+}
+
 def defaultCountdownStart = '2026-10-01T00:00:00+08:00'
 def countdownStartInput = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
 def signingStoreFile = providers.gradleProperty('signingStoreFile').orNull

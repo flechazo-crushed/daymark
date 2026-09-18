@@ -12,7 +12,7 @@ public final class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setTitle(getString(R.string.app_name));
-        setContentView(new CountdownView(this));
+        setContentView(R.layout.activity_main);
 
         Window window = getWindow();
         window.setStatusBarColor(0x00000000);
