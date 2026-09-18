@@ -20,10 +20,10 @@ import java.util.Arrays;
 import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
-    private static final float TAB_LABEL_OFFSET_DP = 12f;
+    private static final float TAB_LABEL_OFFSET_DP = 14f;
     private static final float FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP = 2f;
     private static final float WOOD_TAB_LABEL_EXTRA_OFFSET_DP = 4f;
-    private static final float TAB_LABEL_UPWARD_OFFSET_DP = 2f;
+    private static final float TAB_LABEL_UPWARD_OFFSET_DP = 4f;
     private static final float CONTENT_TRAVEL_DP = 18f;
     private static final long CONTENT_EXIT_DURATION_MS = 90L;
     private static final long CONTENT_ENTER_DURATION_MS = 200L;
