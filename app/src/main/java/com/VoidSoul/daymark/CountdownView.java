@@ -1,4 +1,4 @@
-package com.example.daymark;
+package com.VoidSoul.daymark;
 
 import android.content.Context;
 import android.util.AttributeSet;

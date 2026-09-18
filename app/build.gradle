@@ -51,15 +51,15 @@ try {
 }
 
 android {
-    namespace 'com.example.daymark'
+    namespace 'com.VoidSoul.daymark'
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.example.daymark'
+        applicationId 'com.VoidSoul.daymark'
         minSdk 26
         targetSdk 35
-        versionCode 14
-        versionName '1.0.14'
+        versionCode 15
+        versionName '1.0.15'
 
         buildConfigField 'long', 'COUNTDOWN_START_EPOCH_SECONDS', "${countdownEpochSeconds}L"
         buildConfigField 'String', 'COUNTDOWN_START_ISO', '"' + countdownStart.replace('"', '\\"') + '"'
