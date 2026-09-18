@@ -10,7 +10,9 @@ public final class CountdownView extends FrameLayout {
     private View backgroundView;
     private View dimView;
     private View glassView;
+    private View switchGlass;
     private TextView loveLabel;
+    private CountdownCardView countdownCard;
     private float density;
 
     public CountdownView(Context context, AttributeSet attrs) {
@@ -25,7 +27,10 @@ public final class CountdownView extends FrameLayout {
         backgroundView = findViewById(R.id.background_image);
         dimView = findViewById(R.id.background_dim);
         glassView = findViewById(R.id.glass_card);
+        switchGlass = findViewById(R.id.switch_glass);
         loveLabel = findViewById(R.id.love_label);
+        countdownCard = findViewById(R.id.countdown_card);
+        switchGlass.setOnClickListener(view -> countdownCard.toggleMode());
     }
 
     @Override
@@ -39,6 +44,9 @@ public final class CountdownView extends FrameLayout {
         glassView.measure(
                 MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
+        switchGlass.measure(
+                MeasureSpec.makeMeasureSpec(dp(68), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dp(44), MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -53,6 +61,13 @@ public final class CountdownView extends FrameLayout {
         int cardLeft = (width - cardWidth) / 2;
         int cardTop = Math.round(height * 0.5f - cardHeight * 0.5f);
         glassView.layout(cardLeft, cardTop, cardLeft + cardWidth, cardTop + cardHeight);
+
+        int switchWidth = switchGlass.getMeasuredWidth();
+        int switchHeight = switchGlass.getMeasuredHeight();
+        int switchLeft = width - switchWidth - dp(20);
+        int switchTop = dp(24);
+        switchGlass.layout(switchLeft, switchTop,
+                switchLeft + switchWidth, switchTop + switchHeight);
 
         int labelLeft = (width - loveLabel.getMeasuredWidth()) / 2;
         int labelTop = cardTop + cardHeight + dp(24);

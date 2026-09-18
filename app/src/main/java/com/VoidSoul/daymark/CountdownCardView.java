@@ -19,8 +19,9 @@ public final class CountdownCardView extends View {
     private static final long DAY_MILLIS = 86400000L;
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final long targetMillis = BuildConfig.COUNTDOWN_START_EPOCH_SECONDS * 1000L;
+    private final long relationshipTargetMillis = BuildConfig.COUNTDOWN_START_EPOCH_SECONDS * 1000L;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d", Locale.CHINA);
+    private boolean birthdayMode;
     private float density;
 
     public CountdownCardView(Context context, AttributeSet attrs) {
@@ -29,17 +30,26 @@ public final class CountdownCardView extends View {
         dateFormat.setTimeZone(TimeZone.getDefault());
     }
 
+    public void toggleMode() {
+        birthdayMode = !birthdayMode;
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         float height = getHeight();
         float centerX = getWidth() / 2f;
 
-        long diff = targetMillis - System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        long targetMillis = birthdayMode ? nextBirthdayMillis(now) : relationshipTargetMillis;
+        long diff = targetMillis - now;
         boolean upcoming = diff >= 0;
         long totalDays = Math.abs(diff) / DAY_MILLIS;
 
-        text(canvas, upcoming ? "生日还有" : "和小傻子在一起已经", centerX,
+        String title = birthdayMode ? "你的生日还有"
+                : (upcoming ? "生日还有" : "和小傻子在一起已经");
+        text(canvas, title, centerX,
                 dp(62), upcoming ? 28 : 24, WHITE, true);
         text(canvas, String.valueOf(totalDays), centerX,
                 height * 0.56f, 92, WHITE, true);
@@ -50,6 +60,21 @@ public final class CountdownCardView extends View {
                 + "  " + weekday(targetMillis);
         text(canvas, targetDate, centerX, height - dp(58), 15, MUTED_WHITE, false);
         postInvalidateDelayed(1000L);
+    }
+
+    private long nextBirthdayMillis(long now) {
+        Calendar birthday = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        birthday.setTimeInMillis(now);
+        birthday.set(Calendar.MONTH, Calendar.JANUARY);
+        birthday.set(Calendar.DAY_OF_MONTH, 9);
+        birthday.set(Calendar.HOUR_OF_DAY, 0);
+        birthday.set(Calendar.MINUTE, 0);
+        birthday.set(Calendar.SECOND, 0);
+        birthday.set(Calendar.MILLISECOND, 0);
+        if (birthday.getTimeInMillis() <= now) {
+            birthday.add(Calendar.YEAR, 1);
+        }
+        return birthday.getTimeInMillis();
     }
 
     private String weekday(long millis) {

@@ -34,9 +34,37 @@
         app:sensorHighlight="true">
 
         <com.VoidSoul.daymark.CountdownCardView
+            android:id="@+id/countdown_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:importantForAccessibility="no" />
+
+    </com.example.liquidglass.LiquidGlassView>
+
+    <com.example.liquidglass.LiquidGlassView
+        android:id="@+id/switch_glass"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:contentDescription="切换"
+        android:focusable="true"
+        app:adaptiveTint="true"
+        app:bevelWidth="12dp"
+        app:cornerRadius="18dp"
+        app:dispersionStrength="0.1"
+        app:glassMaterial="regular"
+        app:refractionHeight="10dp"
+        app:sensorHighlight="true">
+
+        <TextView
+            android:id="@+id/switch_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="切换"
+            android:textColor="#FFFFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     </com.example.liquidglass.LiquidGlassView>
 
