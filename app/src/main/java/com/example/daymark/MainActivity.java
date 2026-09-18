@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 public final class MainActivity extends Activity {
@@ -16,8 +15,11 @@ public final class MainActivity extends Activity {
         setContentView(new CountdownView(this));
 
         Window window = getWindow();
-        window.setStatusBarColor(0xFFF8FAFC);
-        window.setNavigationBarColor(0xFFF8FAFC);
+        window.setStatusBarColor(0x00000000);
+        window.setNavigationBarColor(0x00000000);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.setNavigationBarContrastEnforced(false);
+        }
         // Force the decor view to be created before asking PhoneWindow for its
         // insets controller. Some Android 16/ColorOS builds otherwise call
         // DecorView.getWindowInsetsController() while the decor is still null.
@@ -26,8 +28,7 @@ public final class MainActivity extends Activity {
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
                 controller.setSystemBarsAppearance(
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                                | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                        0,
                         WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
                                 | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
             }
