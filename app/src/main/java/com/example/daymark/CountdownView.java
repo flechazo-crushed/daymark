@@ -75,10 +75,13 @@ public final class CountdownView extends View {
         paint.setColor(BACKDROP);
         canvas.drawRect(0, 0, w, h, paint);
 
-        float cardLeft = dp(46);
-        float cardRight = w - dp(46);
-        float cardTop = h * 0.22f;
-        float cardBottom = h * 0.78f;
+        float cardWidth = Math.min(w - dp(120), h * 0.42f);
+        float cardHeight = cardWidth * 4f / 3f;
+        float cardCenterY = h * 0.5f;
+        float cardLeft = (w - cardWidth) / 2f;
+        float cardRight = cardLeft + cardWidth;
+        float cardTop = cardCenterY - cardHeight / 2f;
+        float cardBottom = cardCenterY + cardHeight / 2f;
         float radius = dp(28);
         rect.set(cardLeft, cardTop, cardRight, cardBottom);
         cardPath.reset();
@@ -119,19 +122,6 @@ public final class CountdownView extends View {
                 false, Paint.Align.CENTER);
 
         text(canvas, "爱你的日期", centerX, cardBottom + dp(42), 20, WHITE, true, Paint.Align.CENTER);
-        drawPill(canvas, centerX + dp(52), cardBottom + dp(25), "倒数日");
-    }
-
-    private void drawPill(Canvas canvas, float centerX, float centerY, String value) {
-        paint.setColor(0x66000000);
-        paint.setStyle(Paint.Style.FILL);
-        rect.set(centerX - dp(27), centerY - dp(12), centerX + dp(27), centerY + dp(12));
-        canvas.drawRoundRect(rect, dp(12), dp(12), paint);
-        borderPaint.setColor(0xB8FFFFFF);
-        borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setStrokeWidth(dp(1));
-        canvas.drawRoundRect(rect, dp(12), dp(12), borderPaint);
-        text(canvas, value, centerX, centerY + dp(4), 11, WHITE, false, Paint.Align.CENTER);
     }
 
     private String weekday(long millis) {
@@ -147,7 +137,7 @@ public final class CountdownView extends View {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawImageCover(canvas, source, 0, 0, width, height);
-        return boxBlur(bitmap, 9);
+        return boxBlur(bitmap, 13);
     }
 
     private Bitmap boxBlur(Bitmap source, int radius) {
