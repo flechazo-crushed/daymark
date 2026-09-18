@@ -14,6 +14,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public final class CountdownCardView extends View {
+    public static final int MODE_TOGETHER = 0;
+    public static final int MODE_LITTLE_FOOL = 1;
+    public static final int MODE_WOOD = 2;
+
     private static final int WHITE = Color.WHITE;
     private static final int MUTED_WHITE = 0xD6FFFFFF;
     private static final long DAY_MILLIS = 86400000L;
@@ -21,7 +25,7 @@ public final class CountdownCardView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final long relationshipTargetMillis = BuildConfig.COUNTDOWN_START_EPOCH_SECONDS * 1000L;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d", Locale.CHINA);
-    private boolean birthdayMode;
+    private int mode = MODE_TOGETHER;
     private float density;
 
     public CountdownCardView(Context context, AttributeSet attrs) {
@@ -30,9 +34,12 @@ public final class CountdownCardView extends View {
         dateFormat.setTimeZone(TimeZone.getDefault());
     }
 
-    public void toggleMode() {
-        birthdayMode = !birthdayMode;
-        invalidate();
+    public void setMode(int selectedMode) {
+        int safeMode = Math.max(MODE_TOGETHER, Math.min(MODE_WOOD, selectedMode));
+        if (mode != safeMode) {
+            mode = safeMode;
+            invalidate();
+        }
     }
 
     @Override
@@ -42,15 +49,14 @@ public final class CountdownCardView extends View {
         float centerX = getWidth() / 2f;
 
         long now = System.currentTimeMillis();
-        long targetMillis = birthdayMode ? nextBirthdayMillis(now) : relationshipTargetMillis;
+        long targetMillis = targetMillisForMode(now);
         long diff = targetMillis - now;
         boolean upcoming = diff >= 0;
         long totalDays = Math.abs(diff) / DAY_MILLIS;
 
-        String title = birthdayMode ? "你的生日还有"
-                : (upcoming ? "生日还有" : "和小傻子在一起已经");
+        String title = titleForMode(upcoming);
         text(canvas, title, centerX,
-                dp(62), upcoming ? 28 : 24, WHITE, true);
+                dp(62), mode == MODE_TOGETHER && !upcoming ? 24 : 28, WHITE, true);
         text(canvas, String.valueOf(totalDays), centerX,
                 height * 0.56f, 92, WHITE, true);
         text(canvas, "天", centerX,
@@ -73,19 +79,46 @@ public final class CountdownCardView extends View {
         return Math.max(1000L, nextDay.getTimeInMillis() - now + 100L);
     }
 
-    private long nextBirthdayMillis(long now) {
-        Calendar birthday = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
-        birthday.setTimeInMillis(now);
-        birthday.set(Calendar.MONTH, Calendar.JANUARY);
-        birthday.set(Calendar.DAY_OF_MONTH, 9);
-        birthday.set(Calendar.HOUR_OF_DAY, 0);
-        birthday.set(Calendar.MINUTE, 0);
-        birthday.set(Calendar.SECOND, 0);
-        birthday.set(Calendar.MILLISECOND, 0);
-        if (birthday.getTimeInMillis() <= now) {
-            birthday.add(Calendar.YEAR, 1);
+    private long targetMillisForMode(long now) {
+        if (mode == MODE_LITTLE_FOOL) {
+            return nextAnnualDateMillis(now, Calendar.JANUARY, 9);
         }
-        return birthday.getTimeInMillis();
+        if (mode == MODE_WOOD) {
+            return nextAnnualDateMillis(now, Calendar.MARCH, 23);
+        }
+        return relationshipTargetMillis;
+    }
+
+    private String titleForMode(boolean upcoming) {
+        if (mode == MODE_LITTLE_FOOL) {
+            return "你的生日还有";
+        }
+        if (mode == MODE_WOOD) {
+            return "距木头的生日还有";
+        }
+        return upcoming ? "距离在一起还有" : "和小傻子在一起已经";
+    }
+
+    private long nextAnnualDateMillis(long now, int month, int dayOfMonth) {
+        Calendar target = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        target.setTimeInMillis(now);
+        target.set(Calendar.MONTH, month);
+        target.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        target.set(Calendar.HOUR_OF_DAY, 0);
+        target.set(Calendar.MINUTE, 0);
+        target.set(Calendar.SECOND, 0);
+        target.set(Calendar.MILLISECOND, 0);
+
+        Calendar today = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        today.setTimeInMillis(now);
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        if (target.before(today)) {
+            target.add(Calendar.YEAR, 1);
+        }
+        return target.getTimeInMillis();
     }
 
     private String weekday(long millis) {

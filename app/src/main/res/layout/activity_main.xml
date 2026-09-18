@@ -41,27 +41,67 @@
 
     </com.example.liquidglass.LiquidGlassView>
 
-    <FrameLayout
+    <com.VoidSoul.daymark.ModeSwitchView
         android:id="@+id/switch_glass"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/glass_switch_background"
         android:clickable="true"
         android:clipToOutline="true"
-        android:contentDescription="切换"
+        android:contentDescription="切换倒计时"
         android:focusable="true">
 
-        <TextView
-            android:id="@+id/switch_label"
+        <View
+            android:id="@+id/switch_thumb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="切换"
-            android:textColor="#FFFFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:background="@drawable/glass_switch_thumb"
+            android:importantForAccessibility="no" />
 
-    </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/switch_together"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="在一起"
+                android:textColor="#FFFFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/switch_little_fool"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="小傻瓜"
+                android:textColor="#BFFFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/switch_wood"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="木头"
+                android:textColor="#BFFFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </com.VoidSoul.daymark.ModeSwitchView>
 
     <TextView
         android:id="@+id/love_label"
