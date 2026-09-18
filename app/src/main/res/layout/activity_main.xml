@@ -11,8 +11,8 @@
         android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:scaleX="1.0"
-        android:scaleY="1.0"
+        android:scaleX="1.03"
+        android:scaleY="1.03"
         android:src="@drawable/home_image" />
 
     <View
