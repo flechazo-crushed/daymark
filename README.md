@@ -28,5 +28,5 @@ gradle assembleRelease -PcountdownStart="20260321"
 
 Actions 会上传一个已签名的 Release APK，Artifact 名称为 `daymark-release`；推送 `v*` 标签时还会自动创建 GitHub Release。下载后先解压 ZIP，再安装里面的 `daymark-release.apk`；不要直接安装 ZIP。
 
-当前 workflow 每次构建都会生成临时 Release 签名，因此如果设备已经安装过旧构建，需要先卸载旧版本再安装新构建；应用包名是 `com.example.daymark`。若需要跨版本覆盖安装，应改用固定的 GitHub Secrets 签名密钥。
+Release 使用固定的 GitHub Secrets 签名密钥，Secrets 名称为 `DAYMARK_KEYSTORE_BASE64`、`DAYMARK_KEYSTORE_PASSWORD`、`DAYMARK_KEY_ALIAS` 和 `DAYMARK_KEY_PASSWORD`。应用包名是 `com.example.daymark`；固定密钥启用后，后续版本可以直接覆盖安装。此前由临时密钥签名的版本无法改签，首次切换固定密钥需要卸载一次旧版本。
 默认时间是 `20260321`。

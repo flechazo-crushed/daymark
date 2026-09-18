@@ -15,6 +15,7 @@ dependencies {
 def defaultCountdownStart = '2026-10-01T00:00:00+08:00'
 def countdownStartInput = providers.gradleProperty('countdownStart').orElse(defaultCountdownStart).get()
 def signingStoreFile = providers.gradleProperty('signingStoreFile').orNull
+def signingStoreType = providers.gradleProperty('signingStoreType').orNull
 def signingStorePassword = providers.gradleProperty('signingStorePassword').orNull
 def signingKeyAlias = providers.gradleProperty('signingKeyAlias').orNull
 def signingKeyPassword = providers.gradleProperty('signingKeyPassword').orNull
@@ -57,8 +58,8 @@ android {
         applicationId 'com.example.daymark'
         minSdk 26
         targetSdk 35
-        versionCode 8
-        versionName '1.0.8'
+        versionCode 9
+        versionName '1.0.9'
 
         buildConfigField 'long', 'COUNTDOWN_START_EPOCH_SECONDS', "${countdownEpochSeconds}L"
         buildConfigField 'String', 'COUNTDOWN_START_ISO', '"' + countdownStart.replace('"', '\\"') + '"'
@@ -72,6 +73,9 @@ android {
         release {
             if (signingStoreFile != null) {
                 storeFile file(signingStoreFile)
+                if (signingStoreType != null) {
+                    storeType signingStoreType
+                }
                 storePassword signingStorePassword
                 keyAlias signingKeyAlias
                 keyPassword signingKeyPassword

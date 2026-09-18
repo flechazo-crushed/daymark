@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 public final class MainActivity extends Activity {
@@ -14,19 +15,34 @@ public final class MainActivity extends Activity {
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
 
+        applyFullscreen();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            applyFullscreen();
+        }
+    }
+
+    private void applyFullscreen() {
         Window window = getWindow();
         window.setStatusBarColor(0x00000000);
         window.setNavigationBarColor(0x00000000);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             window.setNavigationBarContrastEnforced(false);
         }
-        // Force the decor view to be created before asking PhoneWindow for its
-        // insets controller. Some Android 16/ColorOS builds otherwise call
-        // DecorView.getWindowInsetsController() while the decor is still null.
+
+        // Obtain the controller only after the decor view exists for Android 16.
         View decorView = window.getDecorView();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false);
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
+                controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                controller.setSystemBarsBehavior(
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
                 controller.setSystemBarsAppearance(
                         0,
                         WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
@@ -34,8 +50,12 @@ public final class MainActivity extends Activity {
             }
         } else {
             decorView.setSystemUiVisibility(
-                    android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                            | android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
     }
 }

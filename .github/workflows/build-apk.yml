@@ -35,33 +35,38 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Generate release signing key
+      - name: Prepare fixed release signing key
         shell: bash
+        env:
+          DAYMARK_KEYSTORE_BASE64: ${{ secrets.DAYMARK_KEYSTORE_BASE64 }}
+          DAYMARK_KEYSTORE_PASSWORD: ${{ secrets.DAYMARK_KEYSTORE_PASSWORD }}
+          DAYMARK_KEY_ALIAS: ${{ secrets.DAYMARK_KEY_ALIAS }}
+          DAYMARK_KEY_PASSWORD: ${{ secrets.DAYMARK_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          signing_password="$(openssl rand -hex 32)"
-          signing_store_file="$RUNNER_TEMP/daymark-release.jks"
-          keytool -genkeypair -v \
-            -keystore "$signing_store_file" \
-            -storetype JKS \
-            -storepass "$signing_password" \
-            -keypass "$signing_password" \
-            -alias daymark-release \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Daymark, OU=Build, O=Daymark, L=Shanghai, ST=Shanghai, C=CN"
-          echo "SIGNING_PASSWORD=$signing_password" >> "$GITHUB_ENV"
+          for required in DAYMARK_KEYSTORE_BASE64 DAYMARK_KEYSTORE_PASSWORD DAYMARK_KEY_ALIAS DAYMARK_KEY_PASSWORD; do
+            if [[ -z "${!required}" ]]; then
+              echo "Missing required repository secret: $required" >&2
+              exit 1
+            fi
+          done
+          signing_store_file="$RUNNER_TEMP/daymark-release.p12"
+          printf '%s' "$DAYMARK_KEYSTORE_BASE64" | base64 --decode > "$signing_store_file"
           echo "SIGNING_STORE_FILE=$signing_store_file" >> "$GITHUB_ENV"
+          echo "SIGNING_STORE_TYPE=PKCS12" >> "$GITHUB_ENV"
+          echo "SIGNING_STORE_PASSWORD=$DAYMARK_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_ALIAS=$DAYMARK_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_PASSWORD=$DAYMARK_KEY_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Build signed release APK
         run: >-
           gradle --no-daemon assembleRelease
           -PcountdownStart="$COUNTDOWN_START"
           -PsigningStoreFile="$SIGNING_STORE_FILE"
-          -PsigningStorePassword="$SIGNING_PASSWORD"
-          -PsigningKeyAlias=daymark-release
-          -PsigningKeyPassword="$SIGNING_PASSWORD"
+          -PsigningStoreType="$SIGNING_STORE_TYPE"
+          -PsigningStorePassword="$SIGNING_STORE_PASSWORD"
+          -PsigningKeyAlias="$SIGNING_KEY_ALIAS"
+          -PsigningKeyPassword="$SIGNING_KEY_PASSWORD"
 
       - name: Prepare signed release APK
         shell: bash
@@ -82,4 +87,4 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             app/build/outputs/apk/release/daymark-release.apk \
             --title "Daymark $GITHUB_REF_NAME" \
-            --notes "Signed Android release. The countdown date is fixed at 20260321."
+            --notes "Signed Android release using the repository's fixed release key. The countdown date is fixed at 20260321."
