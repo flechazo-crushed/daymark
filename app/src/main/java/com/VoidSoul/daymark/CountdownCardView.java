@@ -42,6 +42,10 @@ public final class CountdownCardView extends View {
         }
     }
 
+    public int getMode() {
+        return mode;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

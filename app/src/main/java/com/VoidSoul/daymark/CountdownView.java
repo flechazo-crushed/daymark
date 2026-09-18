@@ -1,9 +1,13 @@
 package com.VoidSoul.daymark;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -15,7 +19,10 @@ import java.util.Arrays;
 import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
-    private static final float TAB_LABEL_OFFSET_DP = 6f;
+    private static final float TAB_LABEL_OFFSET_DP = 10f;
+    private static final float CONTENT_TRAVEL_DP = 18f;
+    private static final long CONTENT_EXIT_DURATION_MS = 90L;
+    private static final long CONTENT_ENTER_DURATION_MS = 200L;
 
     private View backdropView;
     private LiquidGlassView glassView;
@@ -23,6 +30,7 @@ public final class CountdownView extends FrameLayout {
     private TextView loveLabel;
     private CountdownCardView countdownCard;
     private float density;
+    private int contentTransitionToken;
 
     public CountdownView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,7 +54,7 @@ public final class CountdownView extends FrameLayout {
         modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", "木头"));
         offsetTabLabels();
         modeSwitch.setOnTabSelected(index -> {
-            countdownCard.setMode(index);
+            animateCountdownContent(index);
             return Unit.INSTANCE;
         });
     }
@@ -99,6 +107,69 @@ public final class CountdownView extends FrameLayout {
 
     private int dp(float value) {
         return Math.round(value * density);
+    }
+
+    private void animateCountdownContent(int selectedMode) {
+        final int nextMode = Math.max(CountdownCardView.MODE_TOGETHER,
+                Math.min(CountdownCardView.MODE_WOOD, selectedMode));
+        final int currentMode = countdownCard.getMode();
+
+        // Invalidate a cancelled callback before restoring the visible content.
+        contentTransitionToken++;
+        countdownCard.animate().cancel();
+        resetCountdownCardTransform();
+        if (currentMode == nextMode) {
+            return;
+        }
+
+        final int transitionToken = contentTransitionToken;
+        final float direction = nextMode > currentMode ? 1f : -1f;
+        final float travel = dp(CONTENT_TRAVEL_DP);
+        countdownCard.animate()
+                .alpha(0f)
+                .translationX(-direction * travel)
+                .scaleX(0.985f)
+                .scaleY(0.985f)
+                .setDuration(CONTENT_EXIT_DURATION_MS)
+                .setInterpolator(new AccelerateInterpolator(1.2f))
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (transitionToken != contentTransitionToken) {
+                            return;
+                        }
+
+                        countdownCard.setMode(nextMode);
+                        countdownCard.setAlpha(0f);
+                        countdownCard.setTranslationX(direction * travel);
+                        countdownCard.setScaleX(0.985f);
+                        countdownCard.setScaleY(0.985f);
+                        countdownCard.animate()
+                                .alpha(1f)
+                                .translationX(0f)
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(CONTENT_ENTER_DURATION_MS)
+                                .setInterpolator(new DecelerateInterpolator(1.5f))
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        if (transitionToken == contentTransitionToken) {
+                                            resetCountdownCardTransform();
+                                        }
+                                    }
+                                })
+                                .start();
+                    }
+                })
+                .start();
+    }
+
+    private void resetCountdownCardTransform() {
+        countdownCard.setAlpha(1f);
+        countdownCard.setTranslationX(0f);
+        countdownCard.setScaleX(1f);
+        countdownCard.setScaleY(1f);
     }
 
     private void offsetTabLabels() {
