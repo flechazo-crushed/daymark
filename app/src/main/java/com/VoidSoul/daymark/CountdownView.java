@@ -3,6 +3,7 @@ package com.VoidSoul.daymark;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public final class CountdownView extends FrameLayout {
     private LiquidGlassTabBar modeSwitch;
     private TextView loveLabel;
     private CountdownCardView countdownCard;
+    private Typeface displayTypeface;
     private float density;
     private int contentTransitionToken;
 
@@ -48,6 +50,8 @@ public final class CountdownView extends FrameLayout {
         modeSwitch = findViewById(R.id.switch_glass);
         loveLabel = findViewById(R.id.love_label);
         countdownCard = findViewById(R.id.countdown_card);
+        displayTypeface = getResources().getFont(R.font.daymark_font_family);
+        loveLabel.setTypeface(displayTypeface, Typeface.BOLD);
 
         // Both glass roots sample only the static image and dim layer, never
         // each other or the parent that contains their animated children.
@@ -183,13 +187,28 @@ public final class CountdownView extends FrameLayout {
         }
         ViewGroup row = (ViewGroup) tabRow;
         for (int index = 0; index < row.getChildCount(); index++) {
+            View tab = row.getChildAt(index);
             float offset = TAB_LABEL_OFFSET_DP;
             if (index < 2) {
                 offset += FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP;
             } else if (index == 2) {
                 offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
             }
-            row.getChildAt(index).setTranslationX(dp(offset));
+            tab.setTranslationX(dp(offset));
+            applyDisplayTypeface(tab);
+        }
+    }
+
+    private void applyDisplayTypeface(View view) {
+        if (view instanceof TextView) {
+            ((TextView) view).setTypeface(displayTypeface);
+            return;
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int index = 0; index < group.getChildCount(); index++) {
+                applyDisplayTypeface(group.getChildAt(index));
+            }
         }
     }
 }

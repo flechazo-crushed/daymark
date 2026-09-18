@@ -67,6 +67,7 @@
         android:id="@+id/love_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/daymark_font_family"
         android:includeFontPadding="true"
         android:text="爱你的日期"
         android:textColor="#FFFFFFFF"

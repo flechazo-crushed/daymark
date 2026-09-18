@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -25,6 +26,7 @@ public final class CountdownCardView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
     private final long relationshipTargetMillis = BuildConfig.COUNTDOWN_START_EPOCH_SECONDS * 1000L;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d", Locale.CHINA);
+    private final Typeface displayTypeface;
     private int mode = MODE_TOGETHER;
     private float density;
 
@@ -32,6 +34,7 @@ public final class CountdownCardView extends View {
         super(context, attrs);
         density = getResources().getDisplayMetrics().density;
         dateFormat.setTimeZone(TimeZone.getDefault());
+        displayTypeface = getResources().getFont(R.font.daymark_font_family);
     }
 
     public void setMode(int selectedMode) {
@@ -140,8 +143,8 @@ public final class CountdownCardView extends View {
         paint.setColor(color);
         paint.setTextSize(dp(sizeSp));
         paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTypeface(android.graphics.Typeface.create("sans",
-                bold ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
+        paint.setTypeface(Typeface.create(displayTypeface,
+                bold ? Typeface.BOLD : Typeface.NORMAL));
         canvas.drawText(value, x, y, paint);
     }
 
