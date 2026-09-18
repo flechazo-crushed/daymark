@@ -6,7 +6,7 @@ on:
       start_date:
         description: "固定开始日期/时间（2026-12-31 或 ISO-8601）"
         required: true
-        default: "2026-10-01T00:00:00+08:00"
+        default: "20260321"
         type: string
       home_image:
         description: "主页图片 URL，或仓库内图片路径（可留空使用默认图片）"
@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      COUNTDOWN_START: ${{ inputs.start_date || '2026-10-01T00:00:00+08:00' }}
+      COUNTDOWN_START: ${{ inputs.start_date || '20260321' }}
       HOME_IMAGE: ${{ inputs.home_image || 'mmexport1789272863975.jpg' }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

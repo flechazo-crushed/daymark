@@ -39,4 +39,4 @@ gradle assembleRelease -PcountdownStart="2026-12-31T23:59:59+08:00"
 Actions 只上传一个已签名的 Release APK，Artifact 名称为 `daymark-release`。下载后先解压 ZIP，再安装里面的 `daymark-release.apk`；不要直接安装 ZIP。
 
 当前 workflow 每次构建都会生成临时 Release 签名，因此如果设备已经安装过旧构建，需要先卸载旧版本再安装新构建；应用包名是 `com.example.daymark`。若需要跨版本覆盖安装，应改用固定的 GitHub Secrets 签名密钥。
-默认时间是 `2026-10-01T00:00:00+08:00`。
+默认时间是 `20260321`，也可以在运行 Action 时改成其他日期或时间。
