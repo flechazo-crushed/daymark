@@ -16,6 +16,8 @@ gradle assembleRelease -PcountdownStart="20260321"
 
 主页采用全屏背景图、暗色遮罩和中央模糊毛玻璃卡片。生日界面使用每年 `01-09` 的下一次日期。背景图只在构建时写入 APK，应用内不能替换。
 
+为兼容 Android 16 的 RenderNode 渲染，两个液态玻璃控件使用兼容性渲染管线，保留模糊和色差效果。
+
 ## 本地构建
 
 需要 JDK 17、Android SDK 35 和 Gradle 8.7+：
