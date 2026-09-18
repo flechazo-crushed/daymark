@@ -20,10 +20,10 @@ public final class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Configure edge-to-edge before the root view measures its first frame.
+        applyFullscreen();
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
-
-        applyFullscreen();
     }
 
     @Override
@@ -38,8 +38,7 @@ public final class MainActivity extends Activity {
         Window window = getWindow();
         window.setStatusBarColor(0x00000000);
         window.setNavigationBarColor(0x00000000);
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             window.setNavigationBarContrastEnforced(false);
