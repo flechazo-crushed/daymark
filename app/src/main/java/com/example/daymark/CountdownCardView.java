@@ -43,7 +43,7 @@ public final class CountdownCardView extends View {
                 dp(62), 28, WHITE, true);
         text(canvas, String.valueOf(totalDays), centerX,
                 height * 0.56f, 92, WHITE, true);
-        text(canvas, upcoming ? "天" : "天前", centerX,
+        text(canvas, "天", centerX,
                 height * 0.56f + dp(42), 18, MUTED_WHITE, false);
 
         String targetDate = "目标日：" + dateFormat.format(new Date(targetMillis))
