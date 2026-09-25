@@ -1,6 +1,7 @@
 package com.VoidSoul.daymark;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -24,6 +25,22 @@ public final class MainActivity extends Activity {
         applyFullscreen();
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!AppLockSession.isUnlocked()) {
+            startActivity(new Intent(this, LockActivity.class));
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!isChangingConfigurations()) {
+            AppLockSession.lock();
+        }
     }
 
     @Override

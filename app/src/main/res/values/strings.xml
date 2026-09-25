@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">小小小傻子</string>
+    <string name="lock_create_title">创建密码</string>
+    <string name="lock_create_message">设置六位数字密码</string>
+    <string name="lock_confirm_title">确认密码</string>
+    <string name="lock_confirm_message">再次输入刚才的六位密码</string>
+    <string name="lock_unlock_title">输入密码</string>
+    <string name="lock_unlock_message">验证后进入 Daymark</string>
+    <string name="lock_error_mismatch">两次输入的密码不一致</string>
+    <string name="lock_error_wrong">密码错误，请重试</string>
+    <string name="lock_delete">删除一位密码</string>
 </resources>
