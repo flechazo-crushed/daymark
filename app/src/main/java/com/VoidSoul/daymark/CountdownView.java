@@ -8,7 +8,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.FrameLayout;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -124,7 +123,7 @@ public final class CountdownView extends FrameLayout {
 
         int moreSize = moreGlass.getMeasuredWidth();
         int moreLeft = width - dp(16) - moreSize;
-        int moreTop = dp(46);
+        int moreTop = dp(62);
         moreGlass.layout(moreLeft, moreTop, moreLeft + moreSize, moreTop + moreGlass.getMeasuredHeight());
 
         int switchWidth = modeSwitch.getMeasuredWidth();
@@ -215,14 +214,8 @@ public final class CountdownView extends FrameLayout {
         ViewGroup row = (ViewGroup) tabRow;
         for (int index = 0; index < row.getChildCount(); index++) {
             View tab = row.getChildAt(index);
-            float offset = TAB_LABEL_OFFSET_DP;
-            if (index == 0) {
-                offset += FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP;
-            } else {
-                offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
-            }
             tab.setTranslationX(0f);
-            tab.setTranslationY(-dp(TAB_LABEL_UPWARD_OFFSET_DP));
+            tab.setTranslationY(0f);
             applyDisplayTypeface(tab);
         }
     }
