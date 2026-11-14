@@ -31,7 +31,8 @@ public final class CountdownView extends FrameLayout {
     private View backdropView;
     private LiquidGlassView glassView;
     private LiquidGlassTabBar modeSwitch;
-    private TextView loveLabel;
+    private LiquidGlassView quoteGlass;
+    private TextView remoteText;
     private CountdownCardView countdownCard;
     private Typeface displayTypeface;
     private float density;
@@ -49,10 +50,12 @@ public final class CountdownView extends FrameLayout {
         backdropView = findViewById(R.id.glass_backdrop);
         glassView = findViewById(R.id.glass_card);
         modeSwitch = findViewById(R.id.switch_glass);
-        loveLabel = findViewById(R.id.love_label);
+        quoteGlass = findViewById(R.id.quote_glass);
+        remoteText = findViewById(R.id.remote_text);
         countdownCard = findViewById(R.id.countdown_card);
         displayTypeface = getResources().getFont(R.font.daymark_font_family);
-        loveLabel.setTypeface(displayTypeface, Typeface.BOLD);
+        remoteText.setTypeface(displayTypeface);
+        quoteGlass.setBackdropSource(backdropView);
 
         // Both glass roots sample only the static image and dim layer, never
         // each other or the parent that contains their animated children.
@@ -72,6 +75,9 @@ public final class CountdownView extends FrameLayout {
 
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
+        int quoteWidth = Math.max(0, Math.min(dp(300), width - dp(48)));
+        quoteGlass.measure(MeasureSpec.makeMeasureSpec(quoteWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dp(96), MeasureSpec.EXACTLY));
         int cardWidth = Math.round(Math.min(width - dp(120), height * 0.42f));
         int cardHeight = Math.round(cardWidth * 4f / 3f);
         glassView.measure(
@@ -95,16 +101,15 @@ public final class CountdownView extends FrameLayout {
         int cardTop = Math.round(height * 0.5f - cardHeight * 0.5f);
         glassView.layout(cardLeft, cardTop, cardLeft + cardWidth, cardTop + cardHeight);
 
-        int labelLeft = (width - loveLabel.getMeasuredWidth()) / 2;
-        int labelTop = cardTop + cardHeight + dp(24);
-        loveLabel.layout(labelLeft, labelTop,
-                labelLeft + loveLabel.getMeasuredWidth(),
-                labelTop + loveLabel.getMeasuredHeight());
+        int quoteLeft = (width - quoteGlass.getMeasuredWidth()) / 2;
+        int quoteTop = Math.max(dp(24), Math.round(height * 0.13f));
+        quoteGlass.layout(quoteLeft, quoteTop,
+                quoteLeft + quoteGlass.getMeasuredWidth(), quoteTop + quoteGlass.getMeasuredHeight());
 
         int switchWidth = modeSwitch.getMeasuredWidth();
         int switchHeight = modeSwitch.getMeasuredHeight();
         int switchLeft = (width - switchWidth) / 2;
-        int desiredTop = Math.max(loveLabel.getBottom() + dp(18),
+        int desiredTop = Math.max(cardTop + cardHeight + dp(24),
                 Math.round(height * 0.78f));
         int maxTop = Math.max(dp(24), height - switchHeight - dp(36));
         int switchTop = Math.min(desiredTop, maxTop);

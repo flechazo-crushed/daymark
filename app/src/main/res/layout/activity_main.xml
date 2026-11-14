@@ -63,15 +63,29 @@
         app:refractionHeight="8dp"
         app:sensorHighlight="false" />
 
-    <TextView
-        android:id="@+id/love_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/daymark_font_family"
-        android:includeFontPadding="true"
-        android:text="爱你的日期"
-        android:textColor="#FFFFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+    <com.example.liquidglass.LiquidGlassView
+        android:id="@+id/quote_glass"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:adaptiveTint="true"
+        app:bevelWidth="16dp"
+        app:backdropSourceId="@id/glass_backdrop"
+        app:cornerRadius="22dp"
+        app:dispersionStrength="0.04"
+        app:glassMaterial="regular"
+        app:refractionHeight="8dp"
+        app:sensorHighlight="false">
+
+        <TextView
+            android:id="@+id/remote_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp"
+            android:fontFamily="@font/daymark_font_family"
+            android:visibility="gone" />
+    </com.example.liquidglass.LiquidGlassView>
 
 </com.VoidSoul.daymark.CountdownView>

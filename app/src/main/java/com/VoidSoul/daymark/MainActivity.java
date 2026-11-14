@@ -2,6 +2,15 @@ package com.VoidSoul.daymark;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.SharedPreferences;
+import android.widget.TextView;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
@@ -9,6 +18,10 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 public final class MainActivity extends Activity {
+    private static final String TEXT_URL = "https://raw.githubusercontent.com/flechazo-crushed/daymark/main/remote-text.txt";
+    private static final String PREFS = "remote_text_cache";
+    private static final String CACHE_KEY = "text";
+    private final ExecutorService textExecutor = Executors.newSingleThreadExecutor();
     private static final int IMMERSIVE_FLAGS = View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -24,6 +37,10 @@ public final class MainActivity extends Activity {
         applyFullscreen();
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
+        TextView remoteText = findViewById(R.id.remote_text);
+        SharedPreferences cache = getSharedPreferences(PREFS, MODE_PRIVATE);
+        showRemoteText(remoteText, cache.getString(CACHE_KEY, ""));
+        fetchRemoteText(remoteText, cache);
     }
 
     @Override
@@ -32,6 +49,44 @@ public final class MainActivity extends Activity {
         if (hasFocus) {
             applyFullscreen();
         }
+    }
+
+
+    private void showRemoteText(TextView view, String text) {
+        String value = text == null ? "" : text.trim();
+        view.setText(value);
+        view.setVisibility(value.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private void fetchRemoteText(TextView view, SharedPreferences cache) {
+        textExecutor.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) new URL(TEXT_URL).openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+                connection.setRequestMethod("GET");
+                connection.setUseCaches(false);
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) return;
+                StringBuilder text = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        connection.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null && text.length() < 500) {
+                        if (text.length() > 0) text.append('\n');
+                        text.append(line);
+                    }
+                }
+                String result = text.toString().trim();
+                if (result.isEmpty()) return;
+                cache.edit().putString(CACHE_KEY, result).apply();
+                runOnUiThread(() -> showRemoteText(view, result));
+            } catch (Exception ignored) {
+                // Keep the last cached value; with no cache the glass card stays hidden.
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        });
     }
 
     private void applyFullscreen() {
