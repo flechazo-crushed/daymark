@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -21,10 +23,6 @@ import java.util.Arrays;
 import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
-    private static final float TAB_LABEL_OFFSET_DP = 18f;
-    private static final float FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP = 2f;
-    private static final float WOOD_TAB_LABEL_EXTRA_OFFSET_DP = 4f;
-    private static final float TAB_LABEL_UPWARD_OFFSET_DP = 4f;
     private static final float CONTENT_TRAVEL_DP = 18f;
     private static final long CONTENT_EXIT_DURATION_MS = 90L;
     private static final long CONTENT_ENTER_DURATION_MS = 200L;
@@ -68,7 +66,7 @@ public final class CountdownView extends FrameLayout {
         glassView.setBackdropSource(backdropView);
         modeSwitch.setBackdropSource(backdropView);
         modeSwitch.setTabTitles(Arrays.<CharSequence>asList("小傻瓜", "木头"));
-        offsetTabLabels();
+        configureTabLabels();
         modeSwitch.setOnTabSelected(index -> {
             animateCountdownContent(index + 1);
             return Unit.INSTANCE;
@@ -204,32 +202,51 @@ public final class CountdownView extends FrameLayout {
         countdownCard.setScaleY(1f);
     }
 
-    private void offsetTabLabels() {
-        // QWEA0 positions its droplet from tab layout bounds, so shift only
-        // the visible label roots to balance the CJK text inside each segment.
+    private void configureTabLabels() {
+        // v2.0.10 uses WRAP_CONTENT rows and 12dp top/bottom padding for text tabs.
+        // In a compact 46dp bar that leaves too little height for the custom font.
+        // Fit the row and each tab to the available height instead of translating
+        // oversized children (which also misaligns the library's glass droplet).
         View tabRow = modeSwitch.getChildAt(0);
         if (!(tabRow instanceof ViewGroup)) {
             return;
         }
         ViewGroup row = (ViewGroup) tabRow;
+        FrameLayout.LayoutParams rowParams = new FrameLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        rowParams.gravity = Gravity.CENTER;
+        row.setLayoutParams(rowParams);
         for (int index = 0; index < row.getChildCount(); index++) {
             View tab = row.getChildAt(index);
+            tab.setLayoutParams(new LinearLayout.LayoutParams(
+                    0, LayoutParams.MATCH_PARENT, 1f));
+            tab.setPadding(0, 0, 0, 0);
             tab.setTranslationX(0f);
             tab.setTranslationY(0f);
-            applyDisplayTypeface(tab);
+            if (tab instanceof LinearLayout) {
+                ((LinearLayout) tab).setGravity(Gravity.CENTER);
+            }
+            configureTabText(tab);
         }
     }
 
-    private void applyDisplayTypeface(View view) {
+    private void configureTabText(View view) {
         if (view instanceof TextView) {
-            ((TextView) view).setTypeface(displayTypeface);
-            return;
-        }
-        if (view instanceof ViewGroup) {
+            TextView label = (TextView) view;
+            label.setTypeface(displayTypeface);
+            label.setTextSize(14f);
+            label.setSingleLine(true);
+            label.setIncludeFontPadding(true);
+            label.setPadding(0, 0, 0, 0);
+            label.setGravity(Gravity.CENTER);
+            label.setLayoutParams(new LinearLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        } else if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
-            for (int index = 0; index < group.getChildCount(); index++) {
-                applyDisplayTypeface(group.getChildAt(index));
+            for (int i = 0; i < group.getChildCount(); i++) {
+                configureTabText(group.getChildAt(i));
             }
         }
     }
+
 }
