@@ -63,6 +63,16 @@
         app:refractionHeight="8dp"
         app:sensorHighlight="false" />
 
+    <TextView
+        android:id="@+id/more_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="⋮"
+        android:textColor="#FFFFFFFF"
+        android:textSize="28sp"
+        android:contentDescription="更多选项" />
+
     <com.example.liquidglass.LiquidGlassView
         android:id="@+id/quote_glass"
         android:layout_width="0dp"

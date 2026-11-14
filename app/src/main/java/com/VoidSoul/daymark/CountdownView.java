@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -33,6 +34,7 @@ public final class CountdownView extends FrameLayout {
     private LiquidGlassTabBar modeSwitch;
     private LiquidGlassView quoteGlass;
     private TextView remoteText;
+    private TextView moreButton;
     private CountdownCardView countdownCard;
     private Typeface displayTypeface;
     private float density;
@@ -52,6 +54,7 @@ public final class CountdownView extends FrameLayout {
         modeSwitch = findViewById(R.id.switch_glass);
         quoteGlass = findViewById(R.id.quote_glass);
         remoteText = findViewById(R.id.remote_text);
+        moreButton = findViewById(R.id.more_button);
         countdownCard = findViewById(R.id.countdown_card);
         displayTypeface = getResources().getFont(R.font.daymark_font_family);
         remoteText.setTypeface(displayTypeface);
@@ -61,11 +64,19 @@ public final class CountdownView extends FrameLayout {
         // each other or the parent that contains their animated children.
         glassView.setBackdropSource(backdropView);
         modeSwitch.setBackdropSource(backdropView);
-        modeSwitch.setTabTitles(Arrays.<CharSequence>asList("在一起", "小傻瓜", " 木头"));
+        modeSwitch.setTabTitles(Arrays.<CharSequence>asList("小傻瓜", "木头"));
         offsetTabLabels();
         modeSwitch.setOnTabSelected(index -> {
-            animateCountdownContent(index);
+            animateCountdownContent(index + 1);
             return Unit.INSTANCE;
+        });
+        moreButton.setOnClickListener(anchor -> {
+            PopupMenu popup = new PopupMenu(getContext(), moreButton);
+            popup.getMenu().add("其他").setOnMenuItemClickListener(item -> {
+                animateCountdownContent(CountdownCardView.MODE_TOGETHER);
+                return true;
+            });
+            popup.show();
         });
     }
 
@@ -83,6 +94,7 @@ public final class CountdownView extends FrameLayout {
         glassView.measure(
                 MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
+        moreButton.measure(MeasureSpec.makeMeasureSpec(dp(48), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(48), MeasureSpec.EXACTLY));
         int switchWidth = Math.max(0, Math.min(dp(276), width - dp(40)));
         modeSwitch.measure(
                 MeasureSpec.makeMeasureSpec(switchWidth, MeasureSpec.EXACTLY),
@@ -105,6 +117,11 @@ public final class CountdownView extends FrameLayout {
         int quoteTop = Math.max(dp(24), Math.round(height * 0.13f));
         quoteGlass.layout(quoteLeft, quoteTop,
                 quoteLeft + quoteGlass.getMeasuredWidth(), quoteTop + quoteGlass.getMeasuredHeight());
+
+        int moreSize = moreButton.getMeasuredWidth();
+        int moreLeft = width - dp(16) - moreSize;
+        int moreTop = dp(18);
+        moreButton.layout(moreLeft, moreTop, moreLeft + moreSize, moreTop + moreButton.getMeasuredHeight());
 
         int switchWidth = modeSwitch.getMeasuredWidth();
         int switchHeight = modeSwitch.getMeasuredHeight();
@@ -195,9 +212,9 @@ public final class CountdownView extends FrameLayout {
         for (int index = 0; index < row.getChildCount(); index++) {
             View tab = row.getChildAt(index);
             float offset = TAB_LABEL_OFFSET_DP;
-            if (index < 2) {
+            if (index == 0) {
                 offset += FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP;
-            } else if (index == 2) {
+            } else {
                 offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
             }
             tab.setTranslationX(dp(offset));
