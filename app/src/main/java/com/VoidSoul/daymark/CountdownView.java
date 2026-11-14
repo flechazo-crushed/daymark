@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.FrameLayout;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -33,8 +34,9 @@ public final class CountdownView extends FrameLayout {
     private LiquidGlassView glassView;
     private LiquidGlassTabBar modeSwitch;
     private LiquidGlassView quoteGlass;
+    private LiquidGlassView moreGlass;
     private TextView remoteText;
-    private TextView moreButton;
+    private FrameLayout moreButton;
     private CountdownCardView countdownCard;
     private Typeface displayTypeface;
     private float density;
@@ -55,6 +57,8 @@ public final class CountdownView extends FrameLayout {
         quoteGlass = findViewById(R.id.quote_glass);
         remoteText = findViewById(R.id.remote_text);
         moreButton = findViewById(R.id.more_button);
+        moreGlass = findViewById(R.id.more_glass);
+        moreGlass.setBackdropSource(backdropView);
         countdownCard = findViewById(R.id.countdown_card);
         displayTypeface = getResources().getFont(R.font.daymark_font_family);
         remoteText.setTypeface(displayTypeface);
@@ -94,11 +98,11 @@ public final class CountdownView extends FrameLayout {
         glassView.measure(
                 MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
-        moreButton.measure(MeasureSpec.makeMeasureSpec(dp(48), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(48), MeasureSpec.EXACTLY));
-        int switchWidth = Math.max(0, Math.min(dp(276), width - dp(40)));
+        moreGlass.measure(MeasureSpec.makeMeasureSpec(dp(44), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(44), MeasureSpec.EXACTLY));
+        int switchWidth = Math.max(0, Math.min(dp(228), width - dp(64)));
         modeSwitch.measure(
                 MeasureSpec.makeMeasureSpec(switchWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(dp(54), MeasureSpec.EXACTLY));
+                MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -118,10 +122,10 @@ public final class CountdownView extends FrameLayout {
         quoteGlass.layout(quoteLeft, quoteTop,
                 quoteLeft + quoteGlass.getMeasuredWidth(), quoteTop + quoteGlass.getMeasuredHeight());
 
-        int moreSize = moreButton.getMeasuredWidth();
+        int moreSize = moreGlass.getMeasuredWidth();
         int moreLeft = width - dp(16) - moreSize;
         int moreTop = dp(18);
-        moreButton.layout(moreLeft, moreTop, moreLeft + moreSize, moreTop + moreButton.getMeasuredHeight());
+        moreGlass.layout(moreLeft, moreTop, moreLeft + moreSize, moreTop + moreGlass.getMeasuredHeight());
 
         int switchWidth = modeSwitch.getMeasuredWidth();
         int switchHeight = modeSwitch.getMeasuredHeight();
@@ -217,7 +221,7 @@ public final class CountdownView extends FrameLayout {
             } else {
                 offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
             }
-            tab.setTranslationX(dp(offset));
+            tab.setTranslationX(0f);
             tab.setTranslationY(-dp(TAB_LABEL_UPWARD_OFFSET_DP));
             applyDisplayTypeface(tab);
         }
