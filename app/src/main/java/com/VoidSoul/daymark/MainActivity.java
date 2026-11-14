@@ -18,7 +18,7 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 public final class MainActivity extends Activity {
-    private static final String TEXT_URL = "https://raw.githubusercontent.com/flechazo-crushed/daymark/main/remote-text.txt";
+    private static final String TEXT_URL = "https://gh-proxy.org/https://github.com/flechazo-crushed/daymark/blob/main/remote-text.txt";
     private static final String PREFS = "remote_text_cache";
     private static final String CACHE_KEY = "text";
     private final ExecutorService textExecutor = Executors.newSingleThreadExecutor();
