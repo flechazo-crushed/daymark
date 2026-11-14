@@ -22,7 +22,7 @@ import java.util.Arrays;
 import kotlin.Unit;
 
 public final class CountdownView extends FrameLayout {
-    private static final float TAB_LABEL_OFFSET_DP = 14f;
+    private static final float TAB_LABEL_OFFSET_DP = 18f;
     private static final float FIRST_TWO_TAB_LABEL_EXTRA_OFFSET_DP = 2f;
     private static final float WOOD_TAB_LABEL_EXTRA_OFFSET_DP = 4f;
     private static final float TAB_LABEL_UPWARD_OFFSET_DP = 4f;
@@ -99,7 +99,7 @@ public final class CountdownView extends FrameLayout {
                 MeasureSpec.makeMeasureSpec(cardWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(cardHeight, MeasureSpec.EXACTLY));
         moreGlass.measure(MeasureSpec.makeMeasureSpec(dp(44), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(44), MeasureSpec.EXACTLY));
-        int switchWidth = Math.max(0, Math.min(dp(228), width - dp(64)));
+        int switchWidth = Math.max(0, Math.min(dp(200), width - dp(72)));
         modeSwitch.measure(
                 MeasureSpec.makeMeasureSpec(switchWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY));
@@ -124,7 +124,7 @@ public final class CountdownView extends FrameLayout {
 
         int moreSize = moreGlass.getMeasuredWidth();
         int moreLeft = width - dp(16) - moreSize;
-        int moreTop = dp(18);
+        int moreTop = dp(30);
         moreGlass.layout(moreLeft, moreTop, moreLeft + moreSize, moreTop + moreGlass.getMeasuredHeight());
 
         int switchWidth = modeSwitch.getMeasuredWidth();
@@ -221,7 +221,7 @@ public final class CountdownView extends FrameLayout {
             } else {
                 offset += WOOD_TAB_LABEL_EXTRA_OFFSET_DP;
             }
-            tab.setTranslationX(0f);
+            tab.setTranslationX(dp(offset));
             tab.setTranslationY(-dp(TAB_LABEL_UPWARD_OFFSET_DP));
             applyDisplayTypeface(tab);
         }

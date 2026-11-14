@@ -63,16 +63,16 @@ public final class CountdownCardView extends View {
 
         String title = titleForMode(upcoming);
         text(canvas, title, centerX,
-                dp(62), mode == MODE_TOGETHER && !upcoming ? 24 : 28, WHITE, true);
+                dp(66), mode == MODE_TOGETHER && !upcoming ? 24 : 28, WHITE, true);
         text(canvas, String.valueOf(totalDays), centerX,
-                height * 0.56f, 92, WHITE, true);
+                height * 0.52f, 88, WHITE, true);
         text(canvas, "天", centerX,
-                height * 0.56f + dp(42), 18, MUTED_WHITE, false);
+                height * 0.52f + dp(48), 18, MUTED_WHITE, false);
 
         String dateLabel = mode == MODE_TOGETHER ? "起始日：" : "目标日：";
         String targetDate = dateLabel + dateFormat.format(new Date(targetMillis))
                 + "  " + weekday(targetMillis);
-        text(canvas, targetDate, centerX, height - dp(58), 15, MUTED_WHITE, false);
+        text(canvas, targetDate, centerX, height - dp(38), 15, MUTED_WHITE, false);
         postInvalidateDelayed(delayUntilNextDay(now));
     }
 
